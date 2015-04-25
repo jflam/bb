@@ -124,7 +124,7 @@ var GameList = React.createClass({
                 return (
                     <table style={boxScore}>
                     <thead>
-                        <td style={status}>{game.status.status}</td>
+                        <td style={status}>{game.status.status}/{game.status.inning}</td>
                         <th style={runs}><abbr title='runs'>R</abbr></th>
                         <th style={count}><abbr title='hits'>H</abbr></th>
                         <th style={count}><abbr title='errors'>E</abbr></th>
@@ -192,6 +192,6 @@ var Scoreboard = React.createClass({
 });
 
 React.render(
-    <Scoreboard year='2014' month='04' day='23' />,
+    <Scoreboard year='2014' month='04' day='24' />,
     document.getElementById('content')
 );
