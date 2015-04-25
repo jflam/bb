@@ -35,50 +35,125 @@ var logo_offsets = {
 var TeamSummary = React.createClass({
     render: function() {
         var style = {
-            fontSize: '13px',
-            width: '500px',
-            height: '32px',
-            paddingLeft: '30px',
+            width: '65px',
+            height: '36px',
+            paddingLeft: '38px',
+            marginLeft: '4px',
+            verticalAlign: 'middle',
+            display: 'table-cell',
+            textAlign: 'left',
             backgroundImage: 'url(/2014_logo_sprite.png)',
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: '-32px ' + logo_offsets[this.props.code] + 'px',
+            backgroundPosition: '-31px ' + (logo_offsets[this.props.code]) + 'px',
             backgroundSize: '64px auto'
         }
+        var record = {
+            fontSize: '11px',
+            fontWeight: 'normal',
+            color: '#999',
+            lineHeight: '13px'
+        }
+        var abbr = {
+            fontSize: '13px',
+            fontWeight: 'bold',
+            lineHeight: '15px'
+        }
+        var runs = {
+            fontSize: '13px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            width: '30px',
+            height: '38px',
+            background: '#e5e5e5',
+            borderTop: '1px solid #ccc',
+            borderLeft: '1px solid #ccc'
+        }
+        var count = {
+            fontSize: '13px',
+            textAlign: 'center',
+            width: '30px',
+            height: '38px',
+            borderTop: '1px solid #ccc',
+            borderLeft: '1px solid #ccc'
+        }
+        var team = {
+            borderTop: '1px solid #ccc'
+        }
         return ( 
-            <td style={style}>
-                {this.props.code.toUpperCase()} ({this.props.wins}-{this.props.losses})
-            </td>
+            <tr>
+            <th style={team}>
+                <div style={style}>
+                    <abbr style={abbr}>{this.props.abbr.toUpperCase()}</abbr><br/>
+                    <span style={record}>({this.props.wins}-{this.props.losses})</span>
+                </div>
+            </th>
+            <td style={runs}>{this.props.runs}</td>
+            <td style={count}>{this.props.hits}</td>
+            <td style={count}>{this.props.errors}</td>
+            </tr>
         );
     }
 });
 
 var GameList = React.createClass({
     render: function() {
+        var boxScore = {
+            margin: '10px',
+            borderSpacing: '0px',
+            border: '1px solid #ccc',
+        }
+        var status = {
+            fontSize: '13px',
+            padding: '6px',
+            verticalAlign: 'middle',
+            height: '17px'
+        }
+        var runs = {
+            fontWeight: 'bold',
+            borderLeft: '1px solid #ccc'
+        }
+        var count = {
+            fontWeight: 'normal',
+            color: '#999'
+        }
         var scoreboard = this.props.scoreboard;
         var gameList = ( <tr /> );
         if (scoreboard !== null) {
             var game = scoreboard.game[0];
-            /*
-            gameList = (
-                    <tr>
-                        <TeamSummary code={game.away_code} wins={game.away_win} losses={game.away_loss} /> 
-                        <TeamSummary code={game.home_code} wins={game.home_win} losses={game.home_loss} />
-                    </tr>
-                );
-            */
             gameList = scoreboard.game.map(function(game) {
                 return (
-                    <tr>
-                        <TeamSummary code={game.away_code} wins={game.away_win} losses={game.away_loss} /> 
-                        <TeamSummary code={game.home_code} wins={game.home_win} losses={game.home_loss} />
-                    </tr>
+                    <table style={boxScore}>
+                    <thead>
+                        <td style={status}>{game.status.status}</td>
+                        <th style={runs}><abbr title='runs'>R</abbr></th>
+                        <th style={count}><abbr title='hits'>H</abbr></th>
+                        <th style={count}><abbr title='errors'>E</abbr></th>
+                    </thead>
+                    <tbody>
+                        <TeamSummary 
+                            code={game.away_code} 
+                            abbr={game.away_name_abbrev} 
+                            wins={game.away_win} 
+                            losses={game.away_loss}
+                            hits={game.linescore.h.away}
+                            runs={game.linescore.r.away}
+                            errors={game.linescore.e.away}
+                            /> 
+                        <TeamSummary 
+                            code={game.home_code} 
+                            abbr={game.home_name_abbrev} 
+                            wins={game.home_win} 
+                            losses={game.home_loss} 
+                            hits={game.linescore.h.home}
+                            runs={game.linescore.r.home}
+                            errors={game.linescore.e.home}
+                            />
+                    </tbody></table>
                 );
             });
         }
         return (
-            <table>
-                <tbody>{gameList}</tbody>
-            </table>
+            <div> {gameList} </div>
         );
     }
 });
