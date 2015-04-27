@@ -116,6 +116,11 @@ var GameList = React.createClass({
             fontWeight: 'normal',
             color: '#999'
         }
+        var flexbox = {
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexFlow: 'row wrap'
+        }
         var scoreboard = this.props.scoreboard;
         var gameList = ( <tr /> );
         if (scoreboard !== null) {
@@ -153,7 +158,7 @@ var GameList = React.createClass({
             });
         }
         return (
-            <div> {gameList} </div>
+            <div style={flexbox}> {gameList} </div>
         );
     }
 });
@@ -163,14 +168,39 @@ var Scoreboard = React.createClass({
         return {scoreboard: null};
     },
 
+    /* Clean the data that comes back from the site */
+    cleanData: function(scoreboard) {
+        // Walk games
+        scoreboard.game.map(function(game) {
+            if (game.linescore === undefined) {
+                game.linescore = {
+                    h: {
+                        home: 0,
+                        away: 0
+                    },
+                    r: {
+                        home: 0,
+                        away: 0
+                    },
+                    e: {
+                        home: 0,
+                        away: 0
+                    }
+                }
+            }
+        });
+        return scoreboard;
+    },
+
     componentDidMount: function() {
-        var year = this.props.year;
-        var month = this.props.month;
-        var day = this.props.day;
+        var year = this.props.date.getFullYear();
+        var month = this.props.date.getMonth() + 1;
+        var day = this.props.date.getDate();
         $.ajax({
             url: '/scoreboard/' + year + '/' + month + '/' + day,
             dataType: 'json',
             success: function(data) {
+                var data = this.cleanData(data);
                 this.setState({scoreboard: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -184,14 +214,16 @@ var Scoreboard = React.createClass({
         var games = (scoreboard === null) ? 'no' : scoreboard.game.length;
         return (
             <div>
-                <div>There are {games} games for {this.props.year}-{this.props.month}-{this.props.day}</div>
+                <div>There are {games} games for {this.props.date.toDateString()}</div>
                 <GameList scoreboard={scoreboard} />
             </div>
         );
     }
 });
 
+var today = new Date();
+
 React.render(
-    <Scoreboard year='2014' month='04' day='24' />,
+    <Scoreboard date={today} />,
     document.getElementById('content')
 );
