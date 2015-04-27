@@ -22,6 +22,15 @@ app.get('/scoreboard/:year/:month/:day', function(req, res) {
         .catch(function(error) { console.log(error); });
 });
 
+app.get('/boxscore/:gid', function(req, res) {
+    gameday.boxscore(req.params.gid)
+        .then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(data));
+        })
+        .catch(function(error) {console.log(error); });
+});
+
 app.listen(app.get('port'), function() {
   console.log('Server started: http://localhost:' + app.get('port') + '/');
 });
