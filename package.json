@@ -1,7 +1,7 @@
 {
-  "name": "react-tutorial",
-  "version": "0.0.0",
-  "description": "Code from the React tutorial.",
+  "name": "mlb-scoreboard",
+  "version": "0.0.1",
+  "description": "MLB scoreboard master/detail app written in React",
   "main": "server.js",
   "dependencies": {
     "body-parser": "^1.4.3",
@@ -20,16 +20,13 @@
     "url": "https://github.com/reactjs/react-tutorial.git"
   },
   "keywords": [
-    "react",
-    "tutorial",
-    "comment",
-    "example"
+    "react"
   ],
-  "author": "petehunt",
+  "author": "jflam",
   "bugs": {
-    "url": "https://github.com/reactjs/react-tutorial/issues"
+    "url": "https://github.com/jflam/bb/issues"
   },
-  "homepage": "https://github.com/reactjs/react-tutorial",
+  "homepage": "https://github.com/jflam/bb",
   "engines": {
     "node": "0.12.x"
   }
