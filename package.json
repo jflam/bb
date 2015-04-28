@@ -6,7 +6,9 @@
   "dependencies": {
     "body-parser": "^1.4.3",
     "express": "^4.4.5",
-    "gameday-helper": "^0.1.1"
+    "gameday-helper": "^0.1.1",
+    "react": "^0.13.2",
+    "react-router": "^0.13.2"
   },
   "devDependencies": {},
   "scripts": {
