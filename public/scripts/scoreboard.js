@@ -1,3 +1,10 @@
+var React = require('react');
+var Router = require('react-router');
+var Route = Router.Route,
+    DefaultRoute = Router.DefaultRoute,
+    RouteHandler = Router.RouteHandler,
+    Link = Router.Link;
+
 var logo_offsets = {
     ana: -413,
     ari: -30,
@@ -127,6 +134,7 @@ var GameList = React.createClass({
             var game = scoreboard.game[0];
             gameList = scoreboard.game.map(function(game) {
                 return (
+                    <Link to='game' params={{ gid: game.gameday }}>
                     <table style={boxScore}>
                     <thead>
                         <td style={status}>{game.status.status}/{game.status.inning}</td>
@@ -144,7 +152,7 @@ var GameList = React.createClass({
                             runs={game.linescore.r.away}
                             errors={game.linescore.e.away}
                             /> 
-                        <TeamSummary 
+                         <TeamSummary 
                             code={game.home_code} 
                             abbr={game.home_name_abbrev} 
                             wins={game.home_win} 
@@ -154,6 +162,7 @@ var GameList = React.createClass({
                             errors={game.linescore.e.home}
                             />
                     </tbody></table>
+                    </Link>
                 );
             });
         }
@@ -223,7 +232,49 @@ var Scoreboard = React.createClass({
 
 var today = new Date();
 
-React.render(
-    <Scoreboard date={today} />,
-    document.getElementById('content')
+/* App holds master and detail */
+var App = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <Game />
+                <Scoreboard date={today} />
+            </div>
+        )
+    }
+});
+
+/* Index contains the master */
+var Index = React.createClass({
+    render: function() {
+        return (
+            <Scoreboard date={today} />
+        );
+    }
+});
+
+/* Game contains the detail */
+var Game = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.func
+    },
+    render: function() {
+        var gid = this.context.router.getCurrentParams().gid;
+        return (
+            <div>
+                <h1>game selected! {gid}</h1>
+            </div>
+        );
+    }
+});
+
+var routes = (
+    <Route handler={App}>
+        <DefaultRoute handler={Index}/>
+        <Route name='game' path='game/:gid' handler={Game}/>
+    </Route>
 );
+
+Router.run(routes, function(Handler) {
+    React.render(<Handler/>, document.getElementById('content'));
+});
