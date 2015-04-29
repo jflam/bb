@@ -5,6 +5,9 @@ var Route = Router.Route,
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
 
+/* All of the logos of MLB teams are stored in a single .PNG file. This table
+ * defines the offsets into that table for the logos of a specific team. The
+ * keys are taken from standard values in the MLB GameDay data stream */
 var logo_offsets = {
     ana: -413,
     ari: -30,
@@ -39,6 +42,10 @@ var logo_offsets = {
     was: -956
 };
 
+/* The TeamSummary component generates a small view that contains:
+ * 1. The team's logo
+ * 2. The team's 3 letter abbreviation (e.g., LAA for the LA Angels)
+ * 3. The team's current win-loss record */
 var TeamSummary = React.createClass({
     render: function() {
         var style = {
@@ -102,6 +109,9 @@ var TeamSummary = React.createClass({
     }
 });
 
+/* This component renders the list of games.
+ * TODO: I need to refactor some of this code into the Scoreboard component.
+ * TODO: This component should just render a single game card, not a list. */
 var GameList = React.createClass({
     render: function() {
         var boxScore = {
@@ -175,6 +185,14 @@ var GameList = React.createClass({
     }
 });
 
+/* React component that represents the scoreboard card-based view. Clicking on a
+ * card on the scoreboard will trigger an action to display details about the
+ * selected card.
+ * TODO: move some code from the GameList component into this component so that
+ * it will render the list of Game components. Right now, as implemented, it's
+ * not a clear division of responsibility between this component and the
+ * GameList component. This is an artifact of the original React tutorial code
+ * which has a similar, somewhat confusing non-separation of concerns. */
 var Scoreboard = React.createClass({
     getInitialState: function() {
         return {scoreboard: null};
@@ -240,8 +258,8 @@ var App = React.createClass({
     render: function() {
         return (
             <div>
-                <Game />
                 <Scoreboard date={today} />
+                <Game />
             </div>
         )
     }
@@ -271,6 +289,7 @@ var Game = React.createClass({
     }
 });
 
+/* Defining the routes available to the UI */
 var routes = (
     <Route handler={App}>
         <DefaultRoute handler={Index}/>
