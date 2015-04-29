@@ -128,13 +128,16 @@ var GameList = React.createClass({
             flexWrap: 'wrap',
             flexFlow: 'row wrap'
         }
+        var selectedBoxscore = {
+            borderWidth: '5px'
+        }
         var scoreboard = this.props.scoreboard;
         var gameList = ( <tr /> );
         if (scoreboard !== null) {
             var game = scoreboard.game[0];
             gameList = scoreboard.game.map(function(game) {
                 return (
-                    <Link to='game' params={{ gid: game.gameday }}>
+                    <Link to='game' activeStyle={selectedBoxscore} params={{ gid: game.gameday }}>
                     <table style={boxScore}>
                     <thead>
                         <td style={status}>{game.status.status}/{game.status.inning}</td>
