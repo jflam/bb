@@ -17,7 +17,7 @@ app.get('/scoreboard/:year/:month/:day', function(req, res) {
     gameday.masterScoreboard(date)
         .then(function(data) { 
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(data));
+            res.send(data);
         })
         .catch(function(error) { console.log(error); });
 });
@@ -26,7 +26,7 @@ app.get('/boxscore/:gid', function(req, res) {
     gameday.boxscore(req.params.gid)
         .then(function(data) {
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(data));
+            res.send(JSON.parse(data));
         })
         .catch(function(error) {console.log(error); });
 });

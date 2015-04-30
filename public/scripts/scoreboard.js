@@ -276,16 +276,43 @@ var Index = React.createClass({
 
 /* Game contains the detail */
 var Game = React.createClass({
+    /* Interestingly enough, if you omit this method, there is no state property */
+    getInitialState: function() {
+        return {scoreboard: null};
+    },
+
     contextTypes: {
         router: React.PropTypes.func
     },
-    render: function() {
+    /* This method is invoked via a route */
+    componentWillReceiveProps: function() {
         var gid = this.context.router.getCurrentParams().gid;
-        return (
-            <div>
-                <h1>game selected! {gid}</h1>
-            </div>
-        );
+        console.log(gid);
+        $.ajax({
+            url: '/boxscore/gid_' + gid,
+            dataType: 'json',
+            success: function(data) {
+                this.setState({scoreboard: data});
+                console.log(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var scoreboard = this.state.scoreboard;
+        if (scoreboard !== null && scoreboard.data !== null) {
+            var linescore = scoreboard.data.boxscore.linescore;
+            return (
+                <div>
+                    <div>game_info: {linescore.away_team_runs}, {linescore.home_team_runs}</div>
+                </div>
+            );
+        }
+        else {
+            return (<div></div>);
+        }
     }
 });
 
