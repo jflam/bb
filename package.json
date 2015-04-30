@@ -7,6 +7,7 @@
     "body-parser": "^1.4.3",
     "express": "^4.4.5",
     "gameday-helper": "^0.1.1",
+    "jsx-loader": "^0.13.2",
     "react": "^0.13.2",
     "react-router": "^0.13.2"
   },
@@ -15,7 +16,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "webpack-dev-server --devtool eval --progress --colors --content-base build"
   },
   "repository": {
     "type": "git",
