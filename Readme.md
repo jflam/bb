@@ -1,6 +1,4 @@
-Build instructions (until I clean things up)
+Build instructions:
 
-1. JSX build step: jsx --watch .\public\scripts .\public\build
-2. webpack build step: webpack public\build\scoreboard.js
-   public\build\bundle.js --watch --colors --progress
-3. run server: npm start
+1. Start the build server using this command: npm run dev
+2. Start the web server using this command: npm start
