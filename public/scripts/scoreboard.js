@@ -147,7 +147,11 @@ var GameList = React.createClass({
             var game = scoreboard.game[0];
             gameList = scoreboard.game.map(function(game) {
                 return (
-                    <Link to='game' activeStyle={selectedBoxscore} params={{ gid: game.gameday }}>
+                    /* Note here that I am passing home_name_abbrev and
+                     * away_name_abbrev because I don't know how to access the
+                     * master component's state. I think this should be possible
+                     * so TODO: figure out how to do this */
+                    <Link to='game' activeStyle={selectedBoxscore} params={{ gid: game.gameday, home: game.home_name_abbrev, away: game.away_name_abbrev }}>
                     <table style={boxScore}>
                     <thead>
                         <td style={status}>{game.status.status}/{game.status.inning}</td>
@@ -274,6 +278,100 @@ var Index = React.createClass({
     }
 });
 
+var inningCellStyle = {
+    border: '1px solid #d7d7d7',
+    width: '1.4em',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    padding: '6px'
+}
+
+var headerCellStyle = {
+    fontSize: '10px',
+    fontWeight: 'normal',
+    color: '#666',
+    padding: '2px',
+    textAlign: 'center'
+}
+
+var inningTableStyle = {
+    borderSpacing: '0px'
+}
+
+/* This entire section doesn't feel quite right - very verbose. 
+ * I think I'm likely doing something wrong right now here */
+var HeaderCell = React.createClass({
+    render: function() { return (<th style={headerCellStyle}>{this.props.inning.inning}</th>); }
+});
+
+var HomeCell = React.createClass({
+    render: function() { return (<td style={inningCellStyle}>{this.props.inning.home}</td>); }
+});
+
+var AwayCell = React.createClass({
+    render: function() { return (<td style={inningCellStyle}>{this.props.inning.away}</td>); }
+});
+
+var HeaderRow = React.createClass({
+    render: function() {
+        return (
+        <tr>
+            <th></th>
+            {this.props.innings.map(function(inning) {
+                return (<HeaderCell inning={inning} />)
+            })}
+        </tr>);
+    }
+});
+
+var HomeRow = React.createClass({
+    render: function() {
+        return (
+        <tr>
+            <td style={inningCellStyle}>{this.props.team}</td>
+            {this.props.innings.map(function(inning) {
+                return (<HomeCell inning={inning} />)
+            })}
+        </tr>);
+    }
+});
+
+var AwayRow = React.createClass({
+    render: function() {
+        return (
+        <tr>
+            <td style={inningCellStyle}>{this.props.team}</td>
+            {this.props.innings.map(function(inning) {
+                return (<AwayCell inning={inning} />)
+            })}
+        </tr>);
+    }
+});
+
+/* Game contains a LineScore component */
+var LineScore = React.createClass({
+    render: function() {
+        var linescore = this.props.linescore;
+        var heading = (<HeaderRow innings={linescore} />);
+
+        return (
+            <div>
+            <table style={inningTableStyle}>
+            <thead>
+                <HeaderRow innings={linescore} />
+            </thead>
+            <tbody>
+                <AwayRow team={this.props.away} innings={linescore} />
+                <HomeRow team={this.props.home} innings={linescore} />
+            </tbody>
+            </table>
+            </div>
+        )
+    }
+});
+
 /* Game contains the detail */
 var Game = React.createClass({
     /* Interestingly enough, if you omit this method, there is no state property */
@@ -287,13 +385,11 @@ var Game = React.createClass({
     /* This method is invoked via a route */
     componentWillReceiveProps: function() {
         var gid = this.context.router.getCurrentParams().gid;
-        console.log(gid);
         $.ajax({
             url: '/boxscore/gid_' + gid,
             dataType: 'json',
             success: function(data) {
                 this.setState({scoreboard: data});
-                console.log(data);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -302,11 +398,14 @@ var Game = React.createClass({
     },
     render: function() {
         var scoreboard = this.state.scoreboard;
+        var home = this.context.router.getCurrentParams().home;
+        var away = this.context.router.getCurrentParams().away;
         if (scoreboard !== null && scoreboard.data !== null) {
-            var linescore = scoreboard.data.boxscore.linescore;
+            var boxscore = scoreboard.data.boxscore;
+            var linescore = boxscore.linescore;
             return (
                 <div>
-                    <div>game_info: {linescore.away_team_runs}, {linescore.home_team_runs}</div>
+                    <LineScore home={home} away={away} linescore={linescore.inning_line_score} />
                 </div>
             );
         }
@@ -320,7 +419,7 @@ var Game = React.createClass({
 var routes = (
     <Route handler={App}>
         <DefaultRoute handler={Index}/>
-        <Route name='game' path='game/:gid' handler={Game}/>
+        <Route name='game' path='game/:gid/:away/:home' handler={Game}/>
     </Route>
 );
 
