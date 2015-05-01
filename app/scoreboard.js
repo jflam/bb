@@ -109,14 +109,15 @@ var TeamSummary = React.createClass({
     }
 });
 
-/* This component renders the list of games.
- * TODO: I need to refactor some of this code into the Scoreboard component.
- * TODO: This component should just render a single game card, not a list. */
-var GameList = React.createClass({
-        contextTypes: {
-            router: React.PropTypes.func
-        },    
-        render: function() {
+/* This component renders a Game Card. Each Game Card is a summary of a game
+ * that contains TeamSummary components for the home and away team, as well as a
+ * summary of the Runs, Hits and Errors for that game */
+
+var GameCard = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.func
+    },    
+    render: function() {
         var boxScore = {
             margin: '10px',
             borderSpacing: '0px',
@@ -144,46 +145,62 @@ var GameList = React.createClass({
         var selectedBoxscore = {
             borderWidth: '5px'
         }
+        var game = this.props.game;
+        return (
+            /* Note here that I am passing home_name_abbrev and
+             * away_name_abbrev because I don't know how to access the
+             * master component's state. I think this should be possible
+             * so TODO: figure out how to do this */
+            <Link to='game' activeStyle={selectedBoxscore} params={{ gid: game.gameday, home: game.home_name_abbrev, away: game.away_name_abbrev }}>
+            <table style={boxScore}>
+            <thead>
+                <td style={status}>{game.status.status}/{game.status.inning}</td>
+                <th style={runs}><abbr title='runs'>R</abbr></th>
+                <th style={count}><abbr title='hits'>H</abbr></th>
+                <th style={count}><abbr title='errors'>E</abbr></th>
+            </thead>
+            <tbody>
+                <TeamSummary 
+                    code={game.away_code} 
+                    abbr={game.away_name_abbrev} 
+                    wins={game.away_win} 
+                    losses={game.away_loss}
+                    hits={game.linescore.h.away}
+                    runs={game.linescore.r.away}
+                    errors={game.linescore.e.away}
+                    /> 
+                <TeamSummary 
+                    code={game.home_code} 
+                    abbr={game.home_name_abbrev} 
+                    wins={game.home_win} 
+                    losses={game.home_loss} 
+                    hits={game.linescore.h.home}
+                    runs={game.linescore.r.home}
+                    errors={game.linescore.e.home}
+                    />
+            </tbody></table>
+            </Link>
+        );
+    }
+});
+
+/* This component renders a Flexbox that contains a list of GameCards. */
+
+var GameList = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.func
+    },    
+    render: function() {
+        var flexbox = {
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexFlow: 'row wrap'
+        }
         var scoreboard = this.props.scoreboard;
         var gameList = ( <tr /> );
         if (scoreboard !== null) {
-            var game = scoreboard.game[0];
             gameList = scoreboard.game.map(function(game) {
-                return (
-                    /* Note here that I am passing home_name_abbrev and
-                     * away_name_abbrev because I don't know how to access the
-                     * master component's state. I think this should be possible
-                     * so TODO: figure out how to do this */
-                    <Link to='game' activeStyle={selectedBoxscore} params={{ gid: game.gameday, home: game.home_name_abbrev, away: game.away_name_abbrev }}>
-                    <table style={boxScore}>
-                    <thead>
-                        <td style={status}>{game.status.status}/{game.status.inning}</td>
-                        <th style={runs}><abbr title='runs'>R</abbr></th>
-                        <th style={count}><abbr title='hits'>H</abbr></th>
-                        <th style={count}><abbr title='errors'>E</abbr></th>
-                    </thead>
-                    <tbody>
-                        <TeamSummary 
-                            code={game.away_code} 
-                            abbr={game.away_name_abbrev} 
-                            wins={game.away_win} 
-                            losses={game.away_loss}
-                            hits={game.linescore.h.away}
-                            runs={game.linescore.r.away}
-                            errors={game.linescore.e.away}
-                            /> 
-                         <TeamSummary 
-                            code={game.home_code} 
-                            abbr={game.home_name_abbrev} 
-                            wins={game.home_win} 
-                            losses={game.home_loss} 
-                            hits={game.linescore.h.home}
-                            runs={game.linescore.r.home}
-                            errors={game.linescore.e.home}
-                            />
-                    </tbody></table>
-                    </Link>
-                );
+                return (<GameCard game={game} />)
             });
         }
         return (
@@ -194,21 +211,19 @@ var GameList = React.createClass({
 
 /* React component that represents the scoreboard card-based view. Clicking on a
  * card on the scoreboard will trigger an action to display details about the
- * selected card.
- * TODO: move some code from the GameList component into this component so that
- * it will render the list of Game components. Right now, as implemented, it's
- * not a clear division of responsibility between this component and the
- * GameList component. This is an artifact of the original React tutorial code
- * which has a similar, somewhat confusing non-separation of concerns. */
+ * selected card. */
+
 var Scoreboard = React.createClass({
     contextTypes: {
         router: React.PropTypes.func
     },    
+
     getInitialState: function() {
         return {scoreboard: null};
     },
 
     /* Clean the data that comes back from the site */
+
     cleanData: function(scoreboard) {
         // Walk games
         scoreboard.game.map(function(game) {
