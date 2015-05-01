@@ -113,7 +113,10 @@ var TeamSummary = React.createClass({
  * TODO: I need to refactor some of this code into the Scoreboard component.
  * TODO: This component should just render a single game card, not a list. */
 var GameList = React.createClass({
-    render: function() {
+        contextTypes: {
+            router: React.PropTypes.func
+        },    
+        render: function() {
         var boxScore = {
             margin: '10px',
             borderSpacing: '0px',
@@ -198,6 +201,9 @@ var GameList = React.createClass({
  * GameList component. This is an artifact of the original React tutorial code
  * which has a similar, somewhat confusing non-separation of concerns. */
 var Scoreboard = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.func
+    },    
     getInitialState: function() {
         return {scoreboard: null};
     },
@@ -231,7 +237,7 @@ var Scoreboard = React.createClass({
         var month = this.props.date.getMonth() + 1;
         var day = this.props.date.getDate();
         $.ajax({
-            url: '/scoreboard/' + year + '/' + month + '/' + day,
+            url: 'http://localhost:3000/scoreboard/' + year + '/' + month + '/' + day,
             dataType: 'json',
             success: function(data) {
                 var data = this.cleanData(data);
@@ -426,3 +432,6 @@ var routes = (
 Router.run(routes, function(Handler) {
     React.render(<Handler/>, document.getElementById('content'));
 });
+
+/* Export the Index component */
+module.exports = Index;

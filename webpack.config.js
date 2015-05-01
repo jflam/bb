@@ -1,8 +1,9 @@
 module.exports = {
-    entry: ['./public/scripts/scoreboard.js'],
+    entry: ['./app/main.js'],
     output: {
-        path: './public/build',
-        filename: 'bundle.js'
+        path: './build',
+        filename: 'bundle.js',
+        publicPath: 'http://localhost:8080/assets'
     },
     module: {
         loaders: [

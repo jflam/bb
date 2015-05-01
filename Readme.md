@@ -8,6 +8,6 @@
 ##Install and run:
 
 1. After cloning the repository, navigate to the directory where `package.json` lives and run: `npm install`
-2. Start the build server using: `npm run dev`
-3. Start the web server using: `npm start`
+2. Open another command prompt window and start the webpack build server using: `npm run dev`
+3. Open another command prompt window and start the web server using: `npm start`
 4. Navigate to the app via: http://localhost:3000 
